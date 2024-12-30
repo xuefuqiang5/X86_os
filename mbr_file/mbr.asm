@@ -1,3 +1,4 @@
+%include "boot.inc"
 section mbr vstart = 0x7c00 
 jmp code_start   
 code_start:
@@ -10,23 +11,71 @@ code_start:
  print_char:
     mov ax, 0xb800
     mov ds, ax 
-    mov byte [0], 'W'
-    mov byte [1], 0x04
-    mov byte [2], 'e'
-    mov byte [3], 0x04
-    mov byte [4], 'c'
-    mov byte [5], 0x04
-    mov byte [6], 'o'
-    mov byte [7], 0x04
-    mov byte [8], 'm'
-    mov byte [9], 0x04
-    mov byte [10], 'e'
-    mov byte [11], 0x04
-    mov byte [12], '!'
-    mov byte [13], 0x04
-read_sector_to_memory: 
-    
+    mov si, message
+    mov di, 0 
+    mov ax, 0x07c0 
+    mov es, ax
+  print_loop:
+    es lodsb
+    cmp al, 0
+    je print_end
+    mov byte [di], al
+    inc di
+    mov byte [di], 0xa4
+    inc di 
+    jmp print_loop
+ print_end
+
+read_sector_to_memory:
+ init_data:
+    xor eax, eax 
+    mov eax, LOADER_START_SECTION
+    mov cx, 1
+    mov esi, eax
+    mov al, cl
+    mov dx, 0x1f2
+    out dx, al 
+    mov eax, esi 
+    mov dx, 0x1f3
+    out dx, al 
+    shr eax, 8
+    mov dx, 0x1f4
+    out dx, al 
+    mov dx, 0x1f5
+    shr eax, 8
+    out dx, al
+    mov dx, 0x1f6
+    shr eax, 8
+    and al, 0x0f
+    or al, 0xe0
+    out dx, al
+ read_data:
+    mov dx, 0x1f7
+    mov al, 0x20
+    out dx, al 
+ .not_ready:
+    nop 
+    in al, dx
+    and al, 0x88
+    cmp al, 0x08
+    jne .not_ready 
+ .read_init: 
+    mov ax, 0x00
+    mov es, ax 
+    mov ax, cx 
+    mov dx, 256
+    mul dx
+    mov cx, ax
+    mov dx, 0x1f0
+    mov bx, LOADER_START_ADDR 
+ .go_on:
+    in ax, dx 
+    mov [es:bx], ax 
+    add bx, 2
+    loop .go_on
+
 jmp $
-message db "Wecome to my OS"
+message db "Wecome to my OS!" , 0
+
 times 510-($-$$) db 0
 db 0x55, 0xaa
