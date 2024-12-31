@@ -73,9 +73,28 @@ read_sector_to_memory:
     mov [es:bx], ax 
     add bx, 2
     loop .go_on
+ print_char2:
+    mov ax, 0xb800
+    mov ds, ax 
+    mov si, msg2
+    mov di, 0 
+    mov ax, 0x07c0 
+    mov es, ax
+  print_loop2:
+    es lodsb
+    cmp al, 0
+    je print_end2
+    mov byte [di], al
+    inc di
+    mov byte [di], 0xa4
+    inc di 
+    jmp print_loop2
+ print_end2
+
 
 jmp $
 message db "Wecome to my OS!" , 0
+msg2 db "the sector has been readed!" , 0
 
 times 510-($-$$) db 0
 db 0x55, 0xaa
