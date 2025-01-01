@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 定义目标文件
-DISK_IMG="./disk_img_file/c.img"
+DISK_IMG="../disk_img_file/c.img"
 
 # 创建一个包含 1KB 0x11 的文件
 dd if=/dev/zero bs=1 count=1024 | tr '\0' '\x11' > temp.bin
