@@ -19,8 +19,9 @@ void set_segment_descriptor(struct SegmentDescriptor *sd, uint32_t segment_base_
     sd->granularity = (segment_limit >> 16) & (uint32_t)0xf;
     printf("[0] 1B\n");
     printf("[1] 4KB\n");
-    printf("selecte the granularity [0]");
-    if(getchar() == 1) sd -> granularity |= 0xc0;
+    printf("selecte the granularity [0] :");
+    char result = getchar();
+    if(result == '1') sd -> granularity |= 0xc0;
     else sd->granularity |= 0x40;
     sd->access = access;
 }
