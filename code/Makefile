@@ -15,7 +15,7 @@ load.bin: load.asm
 	nasm load.asm -o load.bin
 
 # 默认目标
-all: write_into
+run: write_into
 	$(MAKE) -C ..
 
 # 清理生成的文件
