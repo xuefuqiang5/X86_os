@@ -1,5 +1,5 @@
 %include "boot.inc"
-section mbr vstart = 0x7c00 
+section mbr vstart=0x7c00 
 jmp code_start   
 code_start:
 
