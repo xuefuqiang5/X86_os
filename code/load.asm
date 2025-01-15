@@ -1,13 +1,13 @@
 %include "boot.inc"
 section load vstart=0x900
-jmp detected_memory
+jmp loader_start
 GDT_ADDR:
     GDT_BASE:
         dd 0x00000000
         dd 0x00000000
     CODE_GDT:
         dd 0x0000ffff
-        dd 0x00cf9200
+        dd 0x00cf9a00
     DATA_GDT:
         dd 0x0000ffff
         dd 0x00cf9200
@@ -35,7 +35,7 @@ detected_memory:
         add di, cx
         inc dword [es:ards_count]
         loop .probe_loop
-    .probe_end:
+    .probe_end
     .culculate_memory:
         mov word cx, [es:ards_count]
         mov edi, ards_buf
@@ -50,26 +50,77 @@ detected_memory:
             cmp eax, edx
             jg .push_eax
             jle .next
-            .push_eax: 
+            .push_eax:
+                pop edx 
                 push eax
             .next:
                 add edi, 20 
                 loop .cmp_loop
             pop eax 
-
-            
+    ret
+setup_page_table:
+    mov eax, 0
+    mov ds, eax
+    mov ecx, 4096
+    mov edi, PAGE_DIR_TABLE_POS
+    .clear_page_dir:
+        mov byte [edi], 0
+        inc edi
+        loop .clear_page_dir 
+    .setup_page_dir:
+        mov eax, PAGE_DIR_TABLE_POS
+        add eax, 0x1000
+        mov ebx, eax
+        or eax, PG_US_U | PG_RW_W | PG_P
+        mov [PAGE_DIR_TABLE_POS + 0x0], eax
+        mov [PAGE_DIR_TABLE_POS + 0xc00], eax
+        sub eax, 0x1000
+        mov [PAGE_DIR_TABLE_POS + 4092], eax
+    .setup_page_table:
+        mov ecx, 256
+        mov esi, 0
+        mov edx, PG_US_U | PG_RW_W | PG_P
+        .create_pte:
+            mov [ebx + esi * 4], edx
+            add edx, 4096
+            inc esi
+            loop .create_pte
+        .setup_kernel_pde:
+            mov eax, PAGE_DIR_TABLE_POS
+            add eax, 0x2000
+            or eax, PG_US_U | PG_RW_W | PG_P
+            mov ebx, PAGE_DIR_TABLE_POS
+            mov ecx, 254
+            mov esi, 769
+            .create_kernel_pde:
+                mov [ebx + esi * 4], eax
+                inc esi
+                add eax, 0x1000
+                loop .create_kernel_pde
+            ret
             
 loader_start:
+    call detected_memory
     in al, 0x92
     or al, 2
     out 0x92, al
-
-    lgdt [cs:gdt_ptr]
-
+    lgdt [gdt_ptr]
+    mov eax, cr0 
+    or eax, 0x00000001 
+    mov cr0, eax 
+    jmp dword CODE_SELECTOR:p_mode_start    
+p_mode_start:
+    call setup_page_table
+    sgdt [gdt_ptr]
+    mov ebx, [gdt_ptr + 2]
+    or dword [ebx + 0x18 + 4], 0xc0000000
+    add esp, 0xc0000000
+    mov eax, PAGE_DIR_TABLE_POS
+    mov cr3, eax
     mov eax, cr0
-    or eax, 1
-    mov cr0, eax
-
+    or eax, 0x80000000
+    lgdt [gdt_ptr]
+    mov eax, VIDEO_SELECTOR
+    mov gs, eax
+    mov byte [gs:160], 'V'
     jmp $
-
-
