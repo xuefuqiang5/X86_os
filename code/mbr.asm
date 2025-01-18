@@ -34,7 +34,7 @@ read_sector_to_memory:
  init_data:
     xor eax, eax 
     mov eax, LOADER_START_SECTION
-    mov cx, 1
+    mov cx, 2
     mov esi, eax
     mov al, cl
     mov dx, 0x1f2
@@ -77,6 +77,8 @@ read_sector_to_memory:
     mov [es:bx], ax 
     add bx, 2
     loop .go_on
+ 
+ 
  print_char2:
     mov ax, 0xb800
     mov ds, ax 
@@ -93,6 +95,16 @@ read_sector_to_memory:
     mov byte [di], 0xa4
     inc di 
     jmp print_loop2
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  print_end2
 
    push 0x0000
