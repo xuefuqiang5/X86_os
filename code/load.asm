@@ -1,4 +1,5 @@
 %include "boot.inc"
+
 section load vstart=0x900
 jmp detected_memory
 db 0x00
@@ -8,7 +9,7 @@ GDT_ADDR:
         dd 0x00000000
     CODE_GDT:
         dd 0x0000ffff
-        dd 0x00cf9200
+        dd 0x00cf9800
     DATA_GDT:
         dd 0x0000ffff
         dd 0x00cf9200
@@ -21,10 +22,6 @@ GDT_ADDR:
     ards_buf times 254 db 0 
     ards_count dd 0 
 detected_memory:
-    mov eax, 0
-    mov ds, eax
-    mov ax, 0x8000
-    mov ss, ax
     xor ebx, ebx 
     xor eax, eax
     mov es, ax 
@@ -56,42 +53,113 @@ detected_memory:
             jg .push_eax
             jle .next
             .push_eax: 
-		        pop edx
                 push eax
             .next:
                 add edi, 20 
                 loop .cmp_loop
-    pop eax 
-setup_page_table:
-    .clear_memory:
-        mov ecx, 4096
-        mov edi, PAGE_DIR_TABLE_POS
-        .clear_loop:
-            mov byte [edi], 0x00
-            inc edi
-            loop .clear_loop
-    set_dir_table:
-        mov ebx, PAGE_DIR_TABLE_POS
-        mov eax, PAGE_DIR_TABLE_POS + 0x1000
-        mov edi, 0
-        mov ecx, 1024
-        .set_dir_loop:
-            mov [ebx + edi], eax
-            add edi, 4
-            mov eax, eax + 0x1000
-            loop .set_dir_loop
+            pop eax 
 
+            
+            
 loader_start:
+    mov eax, 0x00
+    mov ds, eax
     in al, 0x92
     or al, 2
     out 0x92, al
+    lgdt [gdt_ptr]
+    mov eax, cr0 
+    or eax, 0x00000001 
+    mov cr0, eax 
+    jmp dword CODE_SELECTOR:p_mode_start    
 
-    lgdt [cs:gdt_ptr]
+[bits 32]
+p_mode_start:
+    mov ax, DATA_SELECTOR 
+    mov ds, ax 
+    mov es, ax 
+    mov ss, ax 
+    mov esp, 0x7c00
+    mov ebp, esp
+    mov ax, VIDEO_SELECTOR 
+    mov gs, ax 
+    mov esi, msg
+    call print_string 
+    call setup_page_table
 
+    sgdt [gdt_ptr]
+    mov ebx, [gdt_ptr + 2]
+    or dword [ebx + 0x18 + 4], 0xc0000000
+    add esp, 0xc0000000
+    mov eax, PAGE_DIR_TABLE_POS
+    mov cr3, eax
     mov eax, cr0
-    or eax, 1
+    or eax, 0x80000000
     mov cr0, eax
-
+    lgdt [gdt_ptr]
+    mov eax, VIDEO_SELECTOR
+    mov gs, eax
+    mov esi, msg1
+    call print_string
     jmp $
 
 
+setup_page_table:
+    mov eax, DATA_SELECTOR
+    mov ds, eax
+    mov ecx, 4096
+    mov edi, PAGE_DIR_TABLE_POS
+    .clear_page_dir:
+        mov byte [edi], 0
+        inc edi
+        loop .clear_page_dir 
+    .setup_page_dir:
+        mov eax, PAGE_DIR_TABLE_POS
+        add eax, 0x1000
+        mov ebx, eax
+        or eax, PG_US_U | PG_RW_W | PG_P
+        mov [PAGE_DIR_TABLE_POS + 0x0], eax
+        mov [PAGE_DIR_TABLE_POS + 0xc00], eax
+        sub eax, 0x1000
+        mov [PAGE_DIR_TABLE_POS + 4092], eax        ;最后一个页目录表项指向自身
+    .setup_page_table:
+        mov ecx, 256
+        mov esi, 0
+        mov edx, PG_US_U | PG_RW_W | PG_P
+        .create_pte:
+            mov [ebx + esi * 4], edx
+            add edx, 4096
+            inc esi
+            loop .create_pte
+        .setup_kernel_pde:
+            mov eax, PAGE_DIR_TABLE_POS
+            add eax, 0x2000
+            or eax, PG_US_U | PG_RW_W | PG_P
+            mov ebx, PAGE_DIR_TABLE_POS
+            mov ecx, 254
+            mov esi, 769
+            .create_kernel_pde:
+                mov [ebx + esi * 4], eax
+                inc esi
+                add eax, 0x1000
+                loop .create_kernel_pde
+            ret
+print_string:
+    push eax
+    push edi
+    mov edi, 160
+    .print_loop:
+        ds lodsb
+        cmp al, 0
+        je print_end
+        mov byte [gs:di], al
+        inc di
+        mov byte [gs:di], 0xa4
+        inc di 
+    jmp .print_loop
+    print_end
+    pop eax
+    pop edi
+    ret
+msg db "protect mode", 0
+msg1 db "OK!", 0
