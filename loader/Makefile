@@ -16,6 +16,11 @@ $(TARGET_DIR):
 # 默认目标
 build: $(TARGET_DIR)/mbr.bin $(TARGET_DIR)/loader.bin
 
+
+debug:
+	make -C .. debug
+
+
 # 清理生成的文件
 clean:
 	rm -f $(TARGET_DIR)/mbr.bin $(TARGET_DIR)/loader.bin

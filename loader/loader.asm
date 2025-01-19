@@ -59,9 +59,7 @@ detected_memory:
                 add edi, 20 
                 loop .cmp_loop
             pop eax 
-
-            
-            
+    
 loader_start:
     mov eax, 0x00
     mov ds, eax
@@ -87,13 +85,11 @@ p_mode_start:
     mov esi, msg
     call print_string 
 
-
     mov eax, KERNEL_START_SECTOR
     mov ebx, KERNEL_START_ADDR
     mov ecx, 200
     call read_disk_m_32
     call setup_page_table
-
     sgdt [gdt_ptr]
     mov ebx, [gdt_ptr + 2]
     or dword [ebx + 0x18 + 4], 0xc0000000
@@ -105,11 +101,12 @@ p_mode_start:
     mov cr0, eax
     lgdt [gdt_ptr]
 enter_kernel:
-   ; call kernel_init
+    call kernel_init
     mov eax, VIDEO_SELECTOR
     mov gs, eax
     mov esi, msg1
     call print_string
+    jmp [vstart]
     jmp $
 
 
@@ -212,5 +209,46 @@ print_string:
     pop eax
     pop edi
     ret
+   
+kernel_init:
+    xor eax, eax
+    xor ebx, ebx
+    xor ecx, ecx
+    xor edx, edx
+    xor esi, esi
+    xor edi, edi
+    mov ebx, KERNEL_START_ADDR
+    mov edx, KERNEL_START_ADDR
+    mov cx, [ebx + E_PHNUM]
+    mov eax, [ebx + E_PHOFF]
+    add ebx, eax
+    mov esi, 0
+    .load_segment:
+        mov eax, [ebx + esi + P_TYPE]
+        cmp eax, PT_LOAD
+        jne .next
+        push ecx 
+        mov ecx, [ebx + esi + P_FILESZ]
+        mov eax, [ebx + esi + P_OFFSET]
+        add eax, edx
+        mov edi, [ebx + esi + P_VADDR]
+        call memcpy
+        pop ecx
+        .next:
+            add esi, 32
+            loop .load_segment
+        mov eax, [edx + E_ENTRY]
+        mov [vstart], eax
+        ret
+memcpy:
+    push esi
+    push edi
+    mov esi, eax
+    rep movsb
+    pop edi
+    pop esi
+    ret
+
 msg db "protect mode", 0
-msg1 db "OK!", 0
+msg1 db "kernel has been loaded!", 0
+vstart db 0x00000000
