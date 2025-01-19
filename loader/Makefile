@@ -1,24 +1,21 @@
-# 定义变量
-DISK_IMG = ../disk_img_file/c.img
-
-# 编译和写入 MBR 和 Loader
-write_into: mbr.bin load.bin
-	dd if=mbr.bin of=$(DISK_IMG) bs=512 count=1 conv=notrunc
-	dd if=load.bin of=$(DISK_IMG) bs=512 seek=1 conv=notrunc
+# 定义目标目录
+TARGET_DIR = ../bin
 
 # 编译 MBR
-mbr.bin: mbr.asm
-	nasm mbr.asm -o mbr.bin
+$(TARGET_DIR)/mbr.bin: mbr.asm | $(TARGET_DIR)
+	nasm -f bin -o $@ $^
 
 # 编译 Loader
-load.bin: load.asm
-	nasm load.asm -o load.bin
+$(TARGET_DIR)/loader.bin: loader.asm | $(TARGET_DIR)
+	nasm -f bin -o $@ $^
+
+# 确保目标目录存在
+$(TARGET_DIR):
+	mkdir -p $(TARGET_DIR)
 
 # 默认目标
-run: write_into
-	$(MAKE) -C ..
+build: $(TARGET_DIR)/mbr.bin $(TARGET_DIR)/loader.bin
 
 # 清理生成的文件
 clean:
-	rm -f *.bin
-	$(MAKE) -C .. clean
+	rm -f $(TARGET_DIR)/mbr.bin $(TARGET_DIR)/loader.bin
