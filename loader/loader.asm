@@ -100,15 +100,15 @@ p_mode_start:
     or eax, 0x80000000
     mov cr0, eax
     lgdt [gdt_ptr]
+    jmp CODE_SELECTOR:enter_kernel
 enter_kernel:
     call kernel_init
     mov eax, VIDEO_SELECTOR
     mov gs, eax
     mov esi, msg1
     call print_string
+    mov esp, 0xc009f000
     jmp [vstart]
-    jmp $
-
 
 setup_page_table:
     mov eax, DATA_SELECTOR
