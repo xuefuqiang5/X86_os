@@ -1,3 +1,5 @@
+[bits 32]
+section .text
 global out8
 out8:
   push ebp
@@ -55,5 +57,29 @@ in32:
   mov dx, [ebp+8]
   xor eax, eax
   in eax, dx
+  pop ebp
+  ret
+global ex_write
+ex_write:
+  push ebp 
+  mov ebp, esp
+  mov eax, [ebp + 8]
+  mov ecx, [ebp + 0xc]
+  mov edx, [ebp + 0x10]
+  mov al, [gs:eax]
+  mov [gs:ecx], al
+  mov byte [gs:edx], 0x0f
+  pop ebp
+  ret 
+
+global write_one_char
+write_one_char:
+  push ebp
+  mov ebp, esp
+  mov eax, [ebp + 8]
+  mov cl, [ebp + 0xc]
+  mov [gs:eax], cl
+  inc eax
+  mov [gs:eax], byte 0x0f
   pop ebp
   ret

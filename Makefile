@@ -6,12 +6,12 @@ TARGET_DIR = ./bin
 
 $(TARGET_DIR)/mbr.bin $(TARGET_DIR)/loader.bin:
 	make -C ./loader build
-$(TARGET_DIR)/main:
+$(TARGET_DIR)/kernel:
 	make -C ./kernel build
-write_into: $(TARGET_DIR)/mbr.bin $(TARGET_DIR)/loader.bin $(TARGET_DIR)/main
+write_into: $(TARGET_DIR)/mbr.bin $(TARGET_DIR)/loader.bin $(TARGET_DIR)/kernel
 	dd if=./bin/mbr.bin of=$(DISK_IMG) bs=512 count=1 conv=notrunc
 	dd if=./bin/loader.bin of=$(DISK_IMG) bs=512 seek=1 conv=notrunc
-	dd if=$(TARGET_DIR)/main of=$(DISK_IMG) bs=512 count=200 seek=9 conv=notrunc 
+	dd if=$(TARGET_DIR)/kernel of=$(DISK_IMG) bs=512 count=200 seek=9 conv=notrunc 
 debug: write_into
 	cd $(BOCHS_FILE) && bochs -f bochsrc && cd - 
 clean: 

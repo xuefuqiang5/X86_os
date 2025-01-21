@@ -5,9 +5,9 @@ void put_char(char c){
     uint16_t cursor = 0x00;
     uint8_t row = 0x00;
     uint8_t col = 0x00;
-    asm volatile("movw %0, %%eax\r\t" 
-                "mobw %%ax, %%gs\r\t" 
-                : : "r"(VIDEO_SELECTOR));
+    asm volatile("movw %%ax , %%gs\r\t"
+                : : "a"(VIDEO_SELECTOR)
+                );
     out8(0x3d4, 0x0e);  
     cursor_high = in8(0x3d5);
     out8(0x3d4, 0x0f);
@@ -72,21 +72,20 @@ void put_char(char c){
             break;
     }
 }
+// 函数还没有被检验正确
 void roll_screen(){
     for(uint8_t i = 1; i < 25; i++){
         for(uint8_t j = 0; j < 80; j++){
             uint16_t old_pos = (i * 80 + j) * 2;
             uint16_t new_pos = ((i - 1) * 80 + j) * 2;
             uint16_t backgroud = new_pos + 1;
-            asm volatile("movb %%gs:(%0), %%al\r\t"
-                        "movb %%al, %%gs:(%1)\r\t"
-                        "movb %0x0f, %%gs:(%2)\r\t"
-                        : : 
-                        "r"(old_pos), 
-                        "r"(new_pos)
-                        "r"(backgroud)
-                        );
+            ex_write(old_pos, new_pos, backgroud);
         }
+    }
+    uint16_t cursor = 24 * 80;
+    for(uint8_t i = 0; i < 80; i++){
+        cursor += 1;
+        write_into(cursor, ' ');
     }
 }
 void set_cursor_pos(uint16_t cursor){
@@ -99,12 +98,5 @@ void set_cursor_pos(uint16_t cursor){
 }
 void write_into(uint16_t cursor, char c){
     uint16_t pos = cursor * 2;
-    uint16_t backgroud = pos + 1;
-    asm volatile("movb %0, %%gs:(%1)\r\t"
-                "movb %0x0f, %%gs:(%2)\r\t"
-                : : 
-                "r"(c),
-                "r"(pos),
-                "r"(backgroud)
-                );
+    write_one_char(pos, c);
 }

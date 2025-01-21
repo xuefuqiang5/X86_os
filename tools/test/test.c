@@ -1,6 +1,11 @@
-#include <stdio.h>
+#include "test.h"
+int add(int a, int b){
+    return a + b;
+}   
 
-int main(){
-    printf("\\");
-    return 0;
-} 
+int sub(int a, int b){
+    return a - b;
+}
+int mul(int a, int b){
+    return a * b;
+}
