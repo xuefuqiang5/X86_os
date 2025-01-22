@@ -1,6 +1,6 @@
 CC = gcc
 LD = ld
-CFLAGS = -m32 -ffreestanding -nostdlib 
+CFLAGS = -m32 -ffreestanding -nostdlib -fno-stack-protector
 TARGET_DIR = ../bin
 LDFLAGS = -T link.ld
 TARGET_FILE = $(TARGET_DIR)/libklib.a

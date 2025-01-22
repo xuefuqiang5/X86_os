@@ -21,3 +21,6 @@ typedef enum {
     CHAR_BACKSLASH = '\\'
 
 } SpecialChar;
+void put_str(char *s);
+void put_int_hex(uint32_t num);
+void put_char(char c);
