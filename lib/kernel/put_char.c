@@ -1,4 +1,4 @@
-#include "put_char.h"
+#include "klib.h"
 void put_char(char c){
     uint8_t cursor_low = 0x00;
     uint8_t cursor_high = 0x00;
@@ -20,9 +20,7 @@ void put_char(char c){
             if(row == 24) {
                 roll_screen();
                 cursor = 24 * 80;
-            } else {
-                cursor = (row + 1) * 80;
-            }
+            } else {cursor = (row + 1) * 80;}
             set_cursor_pos(cursor);
             break;
         case CHAR_CARRIAGE_RETURN:
