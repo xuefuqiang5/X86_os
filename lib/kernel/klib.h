@@ -23,5 +23,4 @@ typedef enum {
     CHAR_BACKSPACE = '\b',
     CHAR_CARRIAGE_RETURN = '\r',
     CHAR_BACKSLASH = '\\'
-
-};
+}special_char;
