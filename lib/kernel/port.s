@@ -83,3 +83,13 @@ write_one_char:
   mov [gs:eax], byte 0x0f
   pop ebp
   ret
+
+
+  global lidt
+lidt:
+  push ebp
+  mov ebp, esp
+  mov eax, [ebp+8]
+  lidt [eax]
+  pop ebp
+  ret

@@ -3,17 +3,25 @@ LD = ld
 CFLAGS = -m32 -ffreestanding -nostdlib -fno-stack-protector
 TARGET_DIR = ../bin
 LDFLAGS = -T link.ld
-TARGET_FILE = $(TARGET_DIR)/libklib.a
-TARGET = main.o
-build: $(TARGET_DIR)/kernel
-	rm -rf ../bin/main.o 
-$(TARGET_DIR)/main.o: main.c
+LIBRARY = ../bin/libklib.a  # 假设库文件的路径
+
+SRC = $(wildcard *.c)
+OBJ = $(SRC:.c=.o)
+
+TARGET = $(TARGET_DIR)/kernel
+
+# 默认目标
+build: $(TARGET)
+	rm -rf *.o
+# 生成目标 .o 文件
+$(TARGET_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-$(TARGET_DIR)/kernel: $(TARGET_FILE) $(TARGET_DIR)/main.o
-	$(CC) $(CFLAGS) ../bin/main.o -L../bin -lklib -o $@ $(LDFLAGS) -z -noexecstack
-$(TARGET_FILE):
+
+$(TARGET): $(OBJ) $(LIBRARY)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -z noexecstack
+$(LIBRARY):
 	make -C ../lib/kernel build
 debug:
-	make -C ../ debug
+	make -C .. debug
 clean:
-	rm -f ../bin/*.o ../bin/kernel ../bin/libklib.a
+	rm -f $(TARGET_DIR)/*.o $(TARGET_DIR)/kernel $(LIBRARY)
