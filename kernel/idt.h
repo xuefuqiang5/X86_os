@@ -1,3 +1,4 @@
+#pragma once
 #include "../lib/kernel/klib.h"
 #define IDT_INTGATE 0x6
 #define IDT_TRAPGATE 0x7
