@@ -51,6 +51,16 @@ void pic_clearmask(int irq) {
     out8(SLAVE_IMR, slave_imr);
   }
 }
+void pic_setmask(int irq) {
+  if(irq < 8) {
+    master_imr |= 1<<irq;
+    out8(MASTER_IMR, master_imr);
+  } else {
+    slave_imr |= 1<<(irq-8);
+    out8(SLAVE_IMR, slave_imr);
+  }
+}
+
 void pic_sendeoi(int irq) {
   if(irq >= 8) out8(SLAVE_CMD, 0x20);
   out8(MASTER_CMD, 0x20);

@@ -5,6 +5,7 @@ void put_str(char *str){
         put_char(str[i]);
     }
 }
+//函数需要修改
 void put_int_hex(uint32_t num){
     char str[32] = {'0'};
     int16_t i = 0;

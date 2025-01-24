@@ -1,6 +1,7 @@
 
 #include "isr.h"
+#include "pic.h"
 void general_program(){
     put_str("this is general !\0");
-    while(1);
+    pic_sendeoi(0);
 }

@@ -5,8 +5,12 @@ int main(){
     clear();
     idt_init();
     void (*base)(void) = general_program;
-    for (int i = 0; i < 20; i++){
+    for (int i = 0; i < 30; i++){
         idt_register(i, 0x06, base);
     }
-    int a = 10 / 0 ;
+    pic_init();
+    pic_clearmask(0);
+    asm volatile("sti");
+    while(1);
+    
 }

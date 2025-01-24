@@ -14,6 +14,9 @@ void set_cursor_pos(uint16_t cursor);
 void write_into(uint16_t cursor, char c);
 void roll_screen();
 void clear();
+void put_str(char *s);
+void put_int_hex(uint32_t num);
+void put_char(char c);
 typedef enum {
     CHAR_TAB = '\t',
     CHAR_NEWLINE = '\n',
@@ -21,7 +24,4 @@ typedef enum {
     CHAR_CARRIAGE_RETURN = '\r',
     CHAR_BACKSLASH = '\\'
 
-} SpecialChar;
-void put_str(char *s);
-void put_int_hex(uint32_t num);
-void put_char(char c);
+};
