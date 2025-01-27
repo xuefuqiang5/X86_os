@@ -38,3 +38,19 @@ void put_int_hex(uint32_t num){
         i--;
     }      
 }
+void put_int_dec(uint32_t num){
+    char str[32] = {'0'};
+    int16_t i = 0;
+    char c = '0';
+    for(;; i++){
+        if(num == 0) break;
+        uint8_t t = num % 10;
+        str[i] = c + t;
+        num /= 10;
+    }
+    i -= 1;
+    while(i >= 0){
+        put_char(str[i]);
+        i--;
+    }      
+}

@@ -17,6 +17,7 @@ void clear();
 void put_str(char *s);
 void put_int_hex(uint32_t num);
 void put_char(char c);
+void put_int_dec(uint32_t num);
 typedef enum {
     CHAR_TAB = '\t',
     CHAR_NEWLINE = '\n',
@@ -24,3 +25,19 @@ typedef enum {
     CHAR_CARRIAGE_RETURN = '\r',
     CHAR_BACKSLASH = '\\'
 }special_char;
+void _assert(char *expression, char *_file, int _line);
+#ifdef NDEBUG 
+    #define assert(expression) ((void) 0)
+#else 
+    #define assert(expression) ((void)(\
+        (!!(expression)) || \
+        (_assert(#expression,__FILE__, (unsigned)(__LINE__)), 0)))
+
+#endif
+#define EFLAGS_IF   0x00000200
+enum intr_status {             
+    INTR_OFF = 0x00,                   
+    INTR_ON = EFLAGS_IF                   
+}; 
+int intr_enable();
+int intr_disable();

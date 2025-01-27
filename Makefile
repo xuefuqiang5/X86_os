@@ -17,6 +17,7 @@ write_into: $(TARGET_DIR)/mbr.bin $(TARGET_DIR)/loader.bin $(TARGET_DIR)/kernel
 debug: write_into
 	cd $(BOCHS_FILE) && bochs -f bochsrc && cd -  
 
+
 clean: 
 	make -C ./loader clean
 	rm -f $(TARGET_DIR)/mbr.bin $(TARGET_DIR)/loader.bin

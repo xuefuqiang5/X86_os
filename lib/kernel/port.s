@@ -93,3 +93,24 @@ lidt:
   lidt [eax]
   pop ebp
   ret
+  
+global intr_enable
+  intr_enable:
+    push ebp 
+    mov ebp, esp
+    pushf 
+    sti
+    pop eax
+    and eax, 0x200
+    pop ebp 
+    ret  
+global intr_disable
+  intr_disable:
+    push ebp 
+    mov ebp, esp
+    pushf 
+    cli
+    pop eax
+    and eax, 0x200
+    pop ebp 
+    ret  
