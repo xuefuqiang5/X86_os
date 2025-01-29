@@ -41,3 +41,6 @@ enum intr_status {
 }; 
 int intr_enable();
 int intr_disable();
+#define NULL ((void *)0)
+void *memset(void *buffer, uint32_t val, uint32_t size);
+#include "bitmap.h"
