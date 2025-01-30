@@ -42,5 +42,8 @@ enum intr_status {
 int intr_enable();
 int intr_disable();
 #define NULL ((void *)0)
-void *memset(void *buffer, uint32_t val, uint32_t size);
+void *memset(void *buffer, int val, uint32_t size);
 #include "bitmap.h"
+#define PAGE_SIZE 4096
+#define PAGE_ALIGN_UP(x) (((x) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1))
+#define PAGE_ALIGN_DOWN(x) ((x) & ~(PAGE_SIZE - 1))

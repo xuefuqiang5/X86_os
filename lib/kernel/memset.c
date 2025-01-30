@@ -1,9 +1,8 @@
 #include "klib.h"
-void *memset(void *buffer, uint32_t val, uint32_t size){
-    uint32_t *int_ptr = (uint32_t *)buffer;
-    while(size--){
-        *int_ptr = val;
-        int_ptr++;
+void *memset(void *buffer, int val, uint32_t byte_size) {
+    unsigned char *p = buffer;
+    for (uint32_t i = 0; i < byte_size; i++) {
+        p[i] = (unsigned char)val;
     }
     return buffer;
 }

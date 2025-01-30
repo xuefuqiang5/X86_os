@@ -25,3 +25,5 @@ debug:
 	make -C .. debug
 clean:
 	rm -f $(TARGET_DIR)/*.o $(TARGET_DIR)/kernel $(LIBRARY)
+	make -C ../lib/kernel clean
+	rm -rf *.o
