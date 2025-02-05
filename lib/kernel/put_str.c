@@ -7,11 +7,12 @@ void put_str(char *str){
 }
 //函数需要修改
 void put_int_hex(uint32_t num){
+    if(num == 0)  {put_char('0');return;}
     char str[32] = {'0'};
     int16_t i = 0;
     char c = '0';
     for(;; i++){
-        if(num == 0) break;
+        if(num == 0)  {break;}
         uint8_t t = num % 16;
         switch (t)
         {
@@ -39,11 +40,12 @@ void put_int_hex(uint32_t num){
     }      
 }
 void put_int_dec(uint32_t num){
+    if(num == 0) {put_char('0');return ;}
     char str[32] = {'0'};
     int16_t i = 0;
     char c = '0';
     for(;; i++){
-        if(num == 0) break;
+        if(num == 0) {break;}
         uint8_t t = num % 10;
         str[i] = c + t;
         num /= 10;

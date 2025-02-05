@@ -1,7 +1,7 @@
 %include "boot.inc"
 
 section load vstart=0x900
-jmp detected_memory
+jmp loader_start
 db 0x00
 GDT_ADDR:
     GDT_BASE:
@@ -59,8 +59,11 @@ detected_memory:
                 add edi, 20 
                 loop .cmp_loop
             pop eax 
+            ret 
     
 loader_start:
+    call detected_memory
+    mov [es:total_mem_addr], eax
     mov eax, 0x00
     mov ds, eax
     in al, 0x92
@@ -248,6 +251,8 @@ memcpy:
     pop edi
     pop esi
     ret
+
+
 
 msg db "protect mode", 0
 msg1 db "kernel has been loaded!", 0

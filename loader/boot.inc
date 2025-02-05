@@ -41,3 +41,4 @@ P_ALIGN     equ 0x1C    ; p_align offset
 
 
 PT_LOAD equ 1
+total_mem_addr equ 0xb00
