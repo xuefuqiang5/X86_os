@@ -2,7 +2,9 @@
 #include "isr.h"
 #include "pic.h"
 #include "memory.h"
+#include "thread.h"
 extern char _BSS_END;
+void pfunc(void *arg);
 int main(){
     clear();
     idt_init();
@@ -12,14 +14,11 @@ int main(){
     } 
     uint32_t a = intr_disable();
     mem_init();
-    uint32_t *heap_data = (uint32_t *)page_allocate(500, PF_KERNEL);
-    put_int_hex(heap_data);
-    put_char('\n');
-    put_int_hex((uint32_t)heap_data + 500 * PAGE_SIZE);
-    put_char('\n');
-    heap_data[500 * 1024 - 1] = 0x12345678;
-    put_int_hex(heap_data[500 * 1024 - 1]);
-    put_char('\n');
+    thread_start("pfunc", 31, pfunc, "hello ");
     put_char('a');
     while(1);
+}
+void pfunc(void *arg){
+    char *para = arg;
+        put_str(para);
 }

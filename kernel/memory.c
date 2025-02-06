@@ -85,35 +85,10 @@ void mem_init() {
     mem_pool_init(total_mem);        // 初始化内存池 
     put_str("mem_init done\n\0"); 
 }
-
-
 void *vir_allocate(uint32_t cnt, enum pool_flags pool_flag){
     if(pool_flag == PF_KERNEL){
         Bitmap *bmp = &vir_ker_pool.vir_bitmap;
         uint32_t start_idx = set_bits(bmp, cnt);
-        
-        put_str("the start_idx = ");
-        put_int_hex(start_idx);
-        put_char('\n');
-        put_str("the vir_ker_pool.addr_start = ");
-        put_int_hex(vir_ker_pool.addr_start);
-        put_char('\n');
-
-        put_str("the bmp size = ");
-        put_int_dec(bmp->byte_size);
-        put_char('\n');
-
-        put_str("the cnt = ");
-        put_int_dec(cnt);
-        put_char('\n');
-        
-        
-        
-        
-        put_str("the vaddr = ");
-        put_int_hex(vir_ker_pool.addr_start + start_idx * PAGE_SIZE);
-        put_char('\n');
-        
         return (void *)(vir_ker_pool.addr_start + start_idx * PAGE_SIZE);
     }
     if(pool_flag == PF_USER){
@@ -147,7 +122,7 @@ void page_register(void *vaddr, void *paddr){
 //建立映射关系
 void* page_allocate(uint32_t cnt, enum pool_flags pool_flag){
     void *vaddr =  vir_allocate(cnt, pool_flag);
-    for(int i = 0,  var_vaddr = (uint32_t)vaddr; i < cnt; i++,  var_vaddr += PAGE_SIZE){
+    for(uint32_t i = 0,  var_vaddr = (uint32_t)vaddr; i < cnt; i++,  var_vaddr += PAGE_SIZE){
         void *paddr = phy_allocate(&phy_ker_pool);
         page_register((void *)var_vaddr, paddr);
     }
