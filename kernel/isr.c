@@ -21,12 +21,25 @@ void *isr_entry_table[33];
         out8(0x20, 0x20); \
         asm volatile("push %0" : : "r" (vecnum) : "memory"); \
     } while (0)
+
+#define EXIT_ISR()               \
+    do{                          \
+        asm volatile ("add $4, %esp");      \
+        asm volatile("popa");    \
+        asm volatile("pop %gs");  \
+        asm volatile("pop %fs");  \
+        asm volatile("pop %es");  \
+        asm volatile("pop %ds");  \
+        asm volatile("add $4, %esp");\
+        while(1);\
+        asm volatile("iret"); \
+    }while(0)
 void general_program(){
-    INIT_ISR(0, 0);
+    //INIT_ISR(0, 0);
     set_cursor_pos(80 * 3);
     put_str("General Protection Fault");
     intr_disable();
-    while(1);
+    //EXIT_ISR();
 }
 void clock_interrupt(){
     struct task_struct* cur_thread = running_thread();

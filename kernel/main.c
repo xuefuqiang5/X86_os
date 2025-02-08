@@ -17,7 +17,6 @@ int main(){
     pic_init();
     timer_init();
     pic_clearmask(0);
-    
     intr_enable();
     //uint32_t a = intr_disable();
     //mem_init();
