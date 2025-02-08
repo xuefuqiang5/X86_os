@@ -52,3 +52,4 @@ void *memset(void *buffer, int val, uint32_t size);
 #define false 0
 void strcpy(char *dst, char *src);
 #include "list.h"
+void save_context();

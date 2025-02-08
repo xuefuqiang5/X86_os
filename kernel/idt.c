@@ -19,6 +19,10 @@ static struct idtr {
   struct gatedesc *base;
 } __attribute__ ((packed)) idtr; 
 
+void change_func_addr(uint32_t vecnum, void (*base)(void)) {
+  idt[vecnum].baselo = (uint32_t)base & 0xffff;
+  idt[vecnum].basehi = (uint32_t)base >> 16;
+}
 
 void idt_register(uint8_t vecnum, uint8_t gatetype, void (*base)(void)) {
   struct gatedesc *desc = &idt[vecnum];

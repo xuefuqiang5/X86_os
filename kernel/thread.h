@@ -80,6 +80,11 @@ struct task_struct {
     enum task_status status; 
     uint8_t priority;              
     char name[16]; 
+    uint8_t ticks;
+    uint32_t elapsed_ticks;
+    struct list_head general_tag; // 用于线程在一般队列中的结点
+    struct list_head all_list_tag; // 用于线程队列thread_all_list中的结点
+    void *pgdir;
     uint32_t stack_magic;         
 }; 
 

@@ -25,11 +25,13 @@ struct list_head *list_pop(struct list_head *list);
 #define list_entry container_of
 #define list_first(lst) ((lst)->next!=(lst)?(lst)->next:NULL)
 #define list_last(lst) ((lst)->prev!=(lst)?(lst)->prev:NULL)
-
 #define list_free_all(list, type, memb, func) do { \
-    struct list_head *_p, *_tmp; \
-    list_foreach_safe(_p, _tmp, (list)) { \
-      list_remove(_p); \
-      (func)(list_entry(_p, type, memb)); \
+    type *current = (list)->next; \
+    while (current != NULL) { \
+        type *next = current->next; \
+        func(&current->memb); \
+        free(current); \
+        current = next; \
     } \
-  } while(0)
+    (list)->next = NULL; \
+} while(0)  

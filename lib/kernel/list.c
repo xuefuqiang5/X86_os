@@ -71,4 +71,11 @@ struct list_head *list_pop(struct list_head *list) {
   list_remove(first);
   return first;
 }
-
+bool list_find(struct list_head *list, struct list_head *item) {
+  struct list_head *p;
+  list_foreach(p, list) {
+    if(p == item)
+      return true;
+  }
+  return false;
+}

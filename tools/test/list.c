@@ -1,6 +1,10 @@
 #include "list.h"
 #include <stdio.h>
 #include <stdlib.h>
+#define offset(type, member) ((size_t)(&((type *)0)->member))
+#define to_entry(list_ptr, type, member) \
+  ((type *)((char *)(list_ptr) - offset(type, member)))
+#define to_link(ptr, member) (&(ptr)->member)
 void list_init(struct list_head *hdr) {
   hdr->next = hdr;
   hdr->prev = hdr;
@@ -73,4 +77,25 @@ struct list_head *list_pop(struct list_head *list) {
   list_remove(first);
   return first;
 }
-
+typedef struct data_t {
+  int data;
+  struct list_head list;
+} data_t;
+int main(){
+  data_t *data_h = (data_t *)malloc(sizeof(data_t)); 
+  list_init(&data_h->list);
+  for(int i = 0; i < 10; i++) {
+    data_t *data = (data_t *)malloc(sizeof(data_t));
+    data->data = i;
+    list_pushback(&data->list, &data_h->list);
+  }
+  printf("the int's size is %ld\n", sizeof(int));
+  printf("the data_t size = %ld\n", sizeof(data_t));
+  printf("the offset = %ld\n ", offset(data_t, list));
+  struct list_head *p = to_link(data_h, list);
+  list_foreach(p, &data_h->list) {
+    data_t *data = to_entry(p, data_t, list);
+    printf("data = %d\n", data->data);
+  }
+  return 0;
+}
