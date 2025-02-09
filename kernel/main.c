@@ -5,23 +5,21 @@
 #include "timer.h"
 #include "thread.h"
 extern char _BSS_END;
+extern void *intr_entry_table[33];
 void pfunc(void *arg);
 int main(){
     clear();
     idt_init();
     pic_init();
     timer_init();
-    init_isr_table();
-    //pic_clearmask(0);
-    //intr_enable();
-    //uint32_t a = intr_disable();
-    //mem_init();
-    //thread_start("pfunc", 31, pfunc, "hello ");
-    //put_char('a');
-    for(int i = 0; i < 30; i++){idt_register(i, 0x06, isr_entry_table[i]);}
-    for(int i = 0; i < 20; i++) {put_int_hex(isr_entry_table[i]); put_char('\n');}
-    pic_clearmask(0);
+    idt_register(20, 0x06, intr_entry_table[20]);
+    for(int i = 0; i < 20; i++) {put_int_hex(intr_entry_table[i]); put_char('\n');}
+    for(int i = 0; i < 30; i++) {idt_register(i, 0x06, intr_entry_table[i]);}
+    pic_clearmask(0); 
     intr_enable();
+
+    intr_disable();
+    pic_setmask(0);
     put_char('a');
     while(1);
 }

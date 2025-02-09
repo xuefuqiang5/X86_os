@@ -1,4 +1,5 @@
 #include "pic.h"
+
 enum regs {
   MASTER_CMD		= 0x20,
   MASTER_STAT		= 0x20,

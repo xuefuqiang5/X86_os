@@ -1,0 +1,1 @@
+nasm -f elf32 isr_entry.S -o ../bin/isr_entry.o 
