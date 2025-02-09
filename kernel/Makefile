@@ -1,6 +1,6 @@
 CC = gcc
 LD = ld
-CFLAGS = -m32 -ffreestanding -nostdlib -fno-stack-protector
+CFLAGS = -m32 -ffreestanding -nostdlib -fno-stack-protector -O0
 TARGET_DIR = ../bin
 LDFLAGS = -T link.ld
 LIBRARY = ../bin/libklib.a  # 假设库文件的路径

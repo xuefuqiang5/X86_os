@@ -1,45 +1,44 @@
-#include "thread.h"
-#include "isr.h"
-#include "pic.h"
-#include "idt.h"
-void *isr_entry_table[33];
-#define ZERO_ACTION do { asm volatile("pushl $0"); } while (0)
-#define ERROR_ACTION do { asm volatile("nop"); } while (0)
-#define INIT_ISR(vecnum, error_code) \
-    do { \
-        if ((error_code) == 0) { \
-            ZERO_ACTION; \
-        } else { \
-            ERROR_ACTION; \
-        } \
-        asm volatile("push %ds"); \
-        asm volatile("push %es"); \
-        asm volatile("push %fs"); \
-        asm volatile("push %gs"); \
-        asm volatile ("pusha\n\t" ::: "memory");   \
-        out8(0xa0, 0x20); \
-        out8(0x20, 0x20); \
-        asm volatile("push %0" : : "r" (vecnum) : "memory"); \
-    } while (0)
 
-#define EXIT_ISR()               \
-    do{                          \
-        asm volatile ("add $4, %esp");      \
-        asm volatile("popa");    \
-        asm volatile("pop %gs");  \
-        asm volatile("pop %fs");  \
-        asm volatile("pop %es");  \
-        asm volatile("pop %ds");  \
-        asm volatile("add $4, %esp");\
-        while(1);\
-        asm volatile("iret"); \
-    }while(0)
+#include "isr.h"
+void *isr_entry_table[33];
+void init_isr_table(){
+    for(int i =  0; i < 33; i++) isr_entry_table[0] = 0;
+    ISR_FUNC(0, 0);
+    ISR_FUNC(1, 0);
+    ISR_FUNC(2, 0);
+    ISR_FUNC(3, 0);
+    ISR_FUNC(4, 0);
+    ISR_FUNC(5, 0);
+    ISR_FUNC(6, 0);
+    ISR_FUNC(7, 0);
+    ISR_FUNC(8, 0);
+    ISR_FUNC(9, 0);
+    ISR_FUNC(10, 0);
+    ISR_FUNC(11, 0);
+    ISR_FUNC(12, 0);
+    ISR_FUNC(13, 0);
+    ISR_FUNC(14, 0);
+    ISR_FUNC(15, 0);
+    ISR_FUNC(16, 0);
+    ISR_FUNC(17, 0);
+    ISR_FUNC(18, 0);
+    ISR_FUNC(19, 0);
+    ISR_FUNC(20, 0);
+    ISR_FUNC(21, 0);
+    ISR_FUNC(22, 0);
+    ISR_FUNC(23, 0);
+    ISR_FUNC(24, 0);
+    ISR_FUNC(25, 0);
+    ISR_FUNC(26, 0);
+    ISR_FUNC(27, 0);
+    ISR_FUNC(28, 0);
+    ISR_FUNC(29, 0);
+    ISR_FUNC(30, 0);
+    ISR_FUNC(31, 0);
+    ISR_FUNC(32, 0);
+    flag = 1;
+}
 void general_program(){
-    //INIT_ISR(0, 0);
-    set_cursor_pos(80 * 3);
-    put_str("General Protection Fault");
-    intr_disable();
-    //EXIT_ISR();
 }
 void clock_interrupt(){
     struct task_struct* cur_thread = running_thread();
