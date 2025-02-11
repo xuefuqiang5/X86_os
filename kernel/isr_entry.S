@@ -1,8 +1,10 @@
- [bits 32]
+
+[bits 32]
 %define ERROR_CODE nop
 %define ZERO push 0
 
-extern put_str
+extern put_int_hex
+extern idt_table
 
 section .data
 intr_str db "interrupt occur!", 0xa, 0
@@ -13,14 +15,17 @@ intr_entry_table:
 section .text
 intr%1entry:
     %2
-    ;push intr_str
-    ;call put_str
-    add esp, 4
+    push ds
+    push es
+    push fs
+    push gs
+    pushad
     mov al, 0x20
     out 0xa0, al
     out 0x20, al
-    add esp, 4
-    iret
+    push %1
+    call [idt_table + %1*4]
+    jmp intr_exit
 
 section .data
     dd intr%1entry
@@ -34,16 +39,16 @@ VECTOR 0x04, ZERO
 VECTOR 0x05, ZERO
 VECTOR 0x06, ZERO
 VECTOR 0x07, ZERO
-VECTOR 0x08, ZERO
+VECTOR 0x08, ERROR_CODE
 VECTOR 0x09, ZERO
-VECTOR 0x0A, ZERO
-VECTOR 0x0B, ZERO
-VECTOR 0x0C, ZERO
-VECTOR 0x0D, ZERO
-VECTOR 0x0E, ZERO
+VECTOR 0x0A, ERROR_CODE
+VECTOR 0x0B, ERROR_CODE
+VECTOR 0x0C, ERROR_CODE
+VECTOR 0x0D, ERROR_CODE
+VECTOR 0x0E, ERROR_CODE
 VECTOR 0x0F, ZERO
 VECTOR 0x10, ZERO
-VECTOR 0x11, ZERO
+VECTOR 0x11, ERROR_CODE
 VECTOR 0x12, ZERO
 VECTOR 0x13, ZERO
 VECTOR 0x14, ZERO
@@ -56,6 +61,18 @@ VECTOR 0x1A, ZERO
 VECTOR 0x1B, ZERO
 VECTOR 0x1C, ZERO
 VECTOR 0x1D, ZERO
-VECTOR 0x1E, ERROR_CODE
+VECTOR 0x1E, ZERO
 VECTOR 0x1F, ZERO
 VECTOR 0x20, ZERO
+
+section .text
+global intr_exit
+intr_exit:
+    add esp, 4
+    popad
+    pop gs
+    pop fs
+    pop es
+    pop ds
+    add esp, 4
+    iretd

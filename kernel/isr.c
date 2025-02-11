@@ -1,7 +1,13 @@
 
 #include "isr.h"
-void general_program(){
-    put_char('I');
+void *idt_table[33];
+void general_program(uint32_t vecnum){
+    put_str("the vecnum  = ");
+    put_int_hex(vecnum);
+    put_char('\n');
+}
+void init_idt_table(){
+    for(int i = 0; i < 33; i++) idt_table[i] = general_program;
 }
 void clock_interrupt(){
     struct task_struct* cur_thread = running_thread();
