@@ -22,7 +22,7 @@ void thread_create(struct task_struct* pthread, thread_func function, void* func
     kthread_stack->ebp = kthread_stack->ebx = kthread_stack->edi = kthread_stack->esi = 0;
 }
 void init_thread(struct task_struct* pthread, char* name, int prio){
-    memset(pthread, 0, PAGE_SIZE);
+    if(name != "main") memset(pthread, 0, PAGE_SIZE);
     strcpy(pthread->name, name);
     if(pthread == main_thread){
         pthread->status = TASK_RUNNING;
@@ -32,40 +32,45 @@ void init_thread(struct task_struct* pthread, char* name, int prio){
     pthread->priority = prio;
     pthread->ticks = prio;
     pthread->pgdir = NULL;
-    pthread->stack_magic = 0x19940625;
+    pthread->stack_magic = MAGIC_NUM;
 }
 struct task_struct* thread_start(char* name, int prio, thread_func function, void* func_arg){
     struct task_struct* thread = page_allocate(1, PF_KERNEL);
     init_thread(thread, name, prio);
     thread_create(thread, function, func_arg);
-    assert(!list_find(&ready_queue_head, &thread->general_tag));
-    list_pushback(&ready_queue_head, &thread->general_tag);
-    assert(!list_find(&all_queue_head, &thread->all_list_tag));
-    list_pushback(&all_queue_head, &thread->all_list_tag);
+    assert(!list_find(&ready_queue_head.general_tag, &thread->general_tag));
+    list_pushback(&ready_queue_head.general_tag, &thread->general_tag);
+    assert(!list_find(&all_queue_head.all_list_tag, &thread->all_list_tag));
+    list_pushback(&all_queue_head.all_list_tag, &thread->all_list_tag);
     return thread;
 }
+void init_list(){
+    to_link(&ready_queue_head, general_tag)->next = to_link(&ready_queue_head, general_tag);
+    to_link(&ready_queue_head, general_tag)->prev = to_link(&ready_queue_head, general_tag);
+    to_link(&ready_queue_head, all_list_tag)->next = to_link(&ready_queue_head, all_list_tag);
+    to_link(&ready_queue_head, all_list_tag)->prev = to_link(&ready_queue_head, all_list_tag);
+}
+
 void init_main_thread(){
     main_thread = running_thread();
     init_thread(main_thread, "main", 31);
-    assert(!list_find(&all_queue_head, &main_thread->all_list_tag));
-    list_pushback(&all_queue_head, &main_thread->all_list_tag);
+    assert(!list_find(&all_queue_head.general_tag, &main_thread->all_list_tag));
+    list_pushback(&all_queue_head.all_list_tag, &main_thread->all_list_tag);
 }
-void schedule(){
 
+void schedule(){
+    assert(!(is_enable_interrupts()));
     struct task_struct* cur = running_thread();
     if(cur->status == TASK_RUNNING){
-        assert(!list_find(&ready_queue_head, &cur->general_tag));
-        list_pushback(&ready_queue_head, &cur->general_tag);
+        assert(!list_find(&ready_queue_head.general_tag, &cur->general_tag));
+        list_pushback(&ready_queue_head.general_tag, &cur->general_tag);
         cur->ticks = cur->priority;
         cur->status = TASK_READY;
     }
     else {}
     
-    struct task_struct* next = list_pop(&ready_queue_head);
+    struct task_struct* next = list_pop(&ready_queue_head.general_tag);
     next->status = TASK_RUNNING;
-    switch_context(cur, next);
+    switch_to(cur, next);
 }
-void switch_context(struct task_struct* cur, struct task_struct* next){
-    //asm volatile("push %0; push %1; call switch_to" : : "g"(cur), "g"(next));
-    return;
-}
+

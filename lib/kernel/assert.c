@@ -9,3 +9,21 @@ void _assert(char *expression, char *_file, int _line){
     put_char('\n');
     intr_disable();
 }
+
+
+
+typedef struct {
+    uint32_t flags;
+} Flags;
+
+
+bool is_enable_interrupts(void) {
+    Flags flags;
+   
+    asm volatile (
+        "pushf\n\t"  
+        "pop %0\n\t" 
+        : "=r" (flags.flags)
+    );
+    return (flags.flags & (1 << 9)) != 0;
+}

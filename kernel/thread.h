@@ -87,10 +87,14 @@ struct task_struct {
     void *pgdir;
     uint32_t stack_magic;         
 }; 
-
+#define MAGIC_NUM 0x19940625
 // 由kernel_thread所调用的函数所需的参数 
 // 各内核线程都用自己的内核栈 
 // 线程优先级 
 //栈的边界标记，用于检测栈的溢出
 
 struct task_struct* thread_start(char* name, int prio, thread_func function, void* func_arg);
+void schedule();
+void init_main_thread();
+void init_list();
+struct task_struct* running_thread();

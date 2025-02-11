@@ -12,5 +12,7 @@ extern void* idt_table[33];
 #define CONCAT(X, Y) X##Y
 void init_idt_table();
 //void init_isr_table();
+void clock_interrupt();
+void register_intr_handler(uint32_t vecnum, isr_func func);
 
     

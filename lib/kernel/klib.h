@@ -53,3 +53,4 @@ void *memset(void *buffer, int val, uint32_t size);
 void strcpy(char *dst, char *src);
 #include "list.h"
 void save_context();
+int is_enable_interrupts(void);

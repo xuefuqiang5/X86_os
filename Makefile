@@ -17,7 +17,17 @@ write_into: $(TARGET_DIR)/mbr.bin $(TARGET_DIR)/loader.bin $(TARGET_DIR)/kernel
 debug: write_into
 	cd $(BOCHS_FILE) && bochs -f bochsrc && cd -  
 
-
+run:
+	qemu-system-i386 \
+	-drive file=$(DISK),format=raw,index=0,media=disk \
+	-smp 1 \
+	-nographic \
+	-serial mon:stdio \
+	-machine accel=tcg \
+	-no-reboot \
+	-D qemu.log \
+	-d guest_errors,cpu_reset
+	
 clean: 
 	make -C ./loader clean
 	rm -f $(TARGET_DIR)/mbr.bin $(TARGET_DIR)/loader.bin
