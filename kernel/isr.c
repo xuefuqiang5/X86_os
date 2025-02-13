@@ -10,7 +10,7 @@ void general_program(uint32_t vecnum){
     put_str("the vecnum  = ");
     put_int_hex(vecnum);
     put_char('\n');
-    while(1);
+    
 }
 void init_idt_table(){
     for(int i = 0; i < 33; i++) idt_table[i] = general_program;
@@ -20,8 +20,8 @@ void register_intr_handler(uint32_t vecnum, isr_func func){
 }
 void clock_interrupt(){
     struct task_struct* cur_thread = running_thread();
-    put_int_hex((uint32_t) cur_thread);
-    put_char('\n');
+    //put_int_hex((uint32_t) cur_thread);
+    //put_char('\n');
     assert(cur_thread->stack_magic == MAGIC_NUM);//0x19940625
     cur_thread->elapsed_ticks++;
     cur_thread->ticks--;

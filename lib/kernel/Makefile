@@ -1,6 +1,6 @@
 
 CC = gcc
-CFLAGS = -m32 -c -fno-stack-protector -nostdlib -ffreestanding
+CFLAGS = -m32 -c -fno-stack-protector -nostdlib -ffreestanding -g
 SRC = $(wildcard *.c)
 OBJS = $(SRC:.c=.o)
 LIB = ../../bin/libklib.a

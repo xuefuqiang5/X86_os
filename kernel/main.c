@@ -21,14 +21,16 @@ int main(){
     //for(int i = 0; i < 33; i++) {put_int_hex(intr_entry_table[i]); put_char('\n');}
     for(int i = 0; i < 33; i++) {idt_register(i, 0x06, intr_entry_table[i]);}
     init_idt_table();
-    
-    
+    register_intr_handler(0x20, clock_interrupt); 
     //pic_clearmask(0); 
-    intr_enable();
-    pic_clearmask(0);
-    register_intr_handler(0x20, clock_interrupt);
+    
     init_list();
     init_main_thread();
+    
+    
+    intr_enable();
+    pic_clearmask(0);
+    
     thread_start("hello", 31, pfunc, "arg");
     while(1){
         put_str("main");
@@ -36,5 +38,5 @@ int main(){
 }
 void pfunc(void *arg){
     char *para = arg;
-        put_str(para);
+        while (1) put_str(para);
 }
