@@ -3,6 +3,9 @@
 void *idt_table[33];
 void general_program(uint32_t vecnum){
     if(vecnum == 0x20 ) return;
+    clear();
+    //intr_disable();
+    set_cursor_pos(80 * 4);
     put_str("the thread name is  ");
     struct task_struct* cur_thread = running_thread();
     put_str(cur_thread->name);
@@ -10,7 +13,7 @@ void general_program(uint32_t vecnum){
     put_str("the vecnum  = ");
     put_int_hex(vecnum);
     put_char('\n');
-    
+    //while(1);
 }
 void init_idt_table(){
     for(int i = 0; i < 33; i++) idt_table[i] = general_program;

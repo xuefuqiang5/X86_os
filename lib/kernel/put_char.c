@@ -1,5 +1,5 @@
 #include "klib.h"
-void put_char(char c){
+/* void put_char(char c){
     uint8_t cursor_low = 0x00;
     uint8_t cursor_high = 0x00;
     uint16_t cursor = 0x00;
@@ -69,7 +69,89 @@ void put_char(char c){
             set_cursor_pos(cursor);
             break;
     }
+} */
+void put_char(char c) {
+    uint16_t cursor;
+    asm volatile("movw %%ax, %%gs" : : "a"(VIDEO_SELECTOR));
+
+    // 读取光标位置
+    out8(0x3D4, 0x0E);
+    uint8_t cursor_high = in8(0x3D5);
+    out8(0x3D4, 0x0F);
+    uint8_t cursor_low = in8(0x3D5);
+    cursor = (cursor_high << 8) | cursor_low;
+
+    switch (c) {
+        case CHAR_NEWLINE:
+            if (cursor / 80 == 24) {
+                roll_screen();
+                cursor = 24 * 80;
+            } else {
+                cursor = (cursor / 80 + 1) * 80;
+            }
+            break;
+            
+        case CHAR_CARRIAGE_RETURN:
+            cursor = cursor / 80 * 80;
+            break;
+            
+        case CHAR_BACKSPACE:
+            if (cursor > 0) {
+                cursor--;
+                write_into(cursor, ' ');
+            }
+            break;
+            
+        case CHAR_TAB: {
+            uint8_t new_col = cursor % 80 + 8 - (cursor % 80 % 8);
+            if (new_col >= 80) {  // 需要换行
+                new_col = 0;
+                uint8_t new_row = cursor / 80 + 1;
+                
+                if (new_row >= 25) {
+                    roll_screen();
+                    new_row = 24;
+                }
+                cursor = new_row * 80 + new_col;
+            } else {
+                cursor = cursor / 80 * 80 + new_col;
+            }
+            break;
+        }
+            
+        default:
+            write_into(cursor, c);
+            cursor++;
+            
+            // 处理屏幕滚动
+            if (cursor >= 80 * 25) {
+                roll_screen();
+                cursor = 80 * 24;
+            }
+            break;
+    }
+
+    set_cursor_pos(cursor);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // 函数还没有被检验正确
 void roll_screen(){
     for(uint8_t i = 1; i < 25; i++){

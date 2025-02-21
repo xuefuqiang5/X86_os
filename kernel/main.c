@@ -8,6 +8,7 @@ extern char _BSS_END;
 extern void *intr_entry_table[33];
 extern void *idt_table[33];
 void pfunc(void *arg);
+void pfunc2(void *arg);
 int main(){
     clear();
     idt_init();
@@ -31,12 +32,24 @@ int main(){
     intr_enable();
     pic_clearmask(0);
     
-    thread_start("hello", 31, pfunc, "arg");
-    while(1){
-        put_str("main");
+    thread_start("hello", 31, pfunc, "arg ");
+    thread_start("hello1", 15, pfunc2, "arg2 ");
+
+    while (1){
+        intr_disable();
+        put_str("Main ");
+        intr_enable();
     }
 }
 void pfunc(void *arg){
     char *para = arg;
-        while (1) put_str(para);
+        while (1) {
+            intr_disable();
+            put_str(para);
+            intr_enable();
+        }
+}
+void pfunc2(void *arg){
+    char *para = arg; 
+    while(1) {intr_disable(); put_str(para);intr_enable(); }
 }

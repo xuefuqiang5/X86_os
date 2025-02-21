@@ -27,3 +27,8 @@ bool is_enable_interrupts(void) {
     );
     return (flags.flags & (1 << 9)) != 0;
 }
+void set_intr_status(uint32_t status){
+    assert(status == 0x200 || status == 0x00); 
+    if(status == 0x200) intr_enable();
+    else intr_disable();
+}
