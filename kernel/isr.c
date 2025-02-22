@@ -1,6 +1,6 @@
 
 #include "isr.h"
-void *idt_table[33];
+void *idt_table[IDT_DESC_CNT];
 void general_program(uint32_t vecnum){
     if(vecnum == 0x20 ) return;
     clear();
@@ -16,7 +16,7 @@ void general_program(uint32_t vecnum){
     //while(1);
 }
 void init_idt_table(){
-    for(int i = 0; i < 33; i++) idt_table[i] = general_program;
+    for(int i = 0; i < IDT_DESC_CNT; i++) idt_table[i] = general_program;
 }
 void register_intr_handler(uint32_t vecnum, isr_func func){
     idt_table[vecnum] = func;
@@ -33,4 +33,9 @@ void clock_interrupt(){
     }else{
         cur_thread->ticks--;
     }
+}
+void keyboard_intr_handler(){
+    uint8_t press_code = in8(0x60);
+    if(press_code < 0x80)
+    put_char(key_mapping_table[press_code].asscii);
 }

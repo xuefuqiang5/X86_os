@@ -64,6 +64,21 @@ VECTOR 0x1D, ZERO
 VECTOR 0x1E, ZERO
 VECTOR 0x1F, ZERO
 VECTOR 0x20, ZERO
+VECTOR 0x21,ZERO        ; 键盘中断（IRQ1）
+VECTOR 0x22,ZERO        ; 级联中断（IRQ2）
+VECTOR 0x23,ZERO        ; 串口2（IRQ3）
+VECTOR 0x24,ZERO        ; 串口1（IRQ4）
+VECTOR 0x25,ZERO        ; 并口2（IRQ5）
+VECTOR 0x26,ZERO        ; 软盘控制器（IRQ6）
+VECTOR 0x27,ZERO        ; 并口1（IRQ7）
+VECTOR 0x28,ZERO        ; 实时时钟（IRQ8）
+VECTOR 0x29,ZERO        ; 重定向（IRQ9）
+VECTOR 0x2a,ZERO        ; 保留（IRQ10）
+VECTOR 0x2b,ZERO        ; 保留（IRQ11）
+VECTOR 0x2c,ZERO        ; PS/2鼠标（IRQ12）
+VECTOR 0x2d,ZERO        ; FPU异常（IRQ13）
+VECTOR 0x2e,ZERO        ; 硬盘（IRQ14）
+VECTOR 0x2f,ZERO        ; 保留（IRQ15）
 
 section .text
 global intr_exit
