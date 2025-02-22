@@ -4,9 +4,11 @@
 #include "memory.h"
 #include "timer.h"
 #include "thread.h"
+#include "semaphore.h"
 extern char _BSS_END;
 extern void *intr_entry_table[33];
 extern void *idt_table[33];
+struct semaphore mutex;
 void pfunc(void *arg);
 void pfunc2(void *arg);
 int main(){
@@ -33,20 +35,21 @@ int main(){
     pic_clearmask(0);
     
     thread_start("hello", 31, pfunc, "arg ");
-    thread_start("hello1", 15, pfunc2, "arg2 ");
-
-    while (1){
-        intr_disable();
-        put_str("Main ");
-        intr_enable();
+    //thread_start("hello1", 15, pfunc2, "arg2 ");
+    sema_init(&mutex, 1);
+    while(1){  
+    sema_wait(&mutex);
+    put_str("Main ");
+    sema_post(&mutex);
     }
+    
 }
 void pfunc(void *arg){
     char *para = arg;
         while (1) {
-            intr_disable();
+            sema_wait(&mutex);
             put_str(para);
-            intr_enable();
+            sema_post(&mutex);
         }
 }
 void pfunc2(void *arg){

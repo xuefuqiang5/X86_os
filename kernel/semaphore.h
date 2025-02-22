@@ -11,5 +11,8 @@ struct lock{
     uint32_t lock_rpt_nr;
 };
 void sema_init(struct semaphore *sema, uint8_t value);
-void lock_init();
-void waiter_init();
+void sema_wait(struct semaphore *sema);
+void sema_post(struct semaphore *sema); 
+void lock_acquire(struct lock *l);
+void lock_release(struct lock *l); 
+void lock_init(struct lock *l);
