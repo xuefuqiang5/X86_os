@@ -5,12 +5,13 @@
 #include "timer.h"
 #include "thread.h"
 #include "semaphore.h"
+#include "console.h"
 extern char _BSS_END;
 extern void *intr_entry_table[33];
 extern void *idt_table[33];
-struct semaphore mutex;
-void pfunc(void *arg);
-void pfunc2(void *arg);
+void k_thread_a(void *arg);
+void k_thread_b(void *arg);
+struct lock mutex;
 int main(){
     clear();
     idt_init();
@@ -26,33 +27,30 @@ int main(){
     init_idt_table();
     register_intr_handler(0x20, clock_interrupt); 
     //pic_clearmask(0); 
-    
     init_list();
     init_main_thread();
-    
-    
+    console_init();  
+    thread_start("thread_a", 15, k_thread_a, "arg_a\n");
+    thread_start("thread_b", 31, k_thread_b, "arg_b");
     intr_enable();
     pic_clearmask(0);
-    
-    thread_start("hello", 31, pfunc, "arg ");
     //thread_start("hello1", 15, pfunc2, "arg2 ");
-    sema_init(&mutex, 1);
-    while(1){  
-    sema_wait(&mutex);
-    put_str("Main ");
-    sema_post(&mutex);
+    while(1){
+        console_put_str(" Main");
     }
-    
+    return 0; 
 }
-void pfunc(void *arg){
-    char *para = arg;
-        while (1) {
-            sema_wait(&mutex);
-            put_str(para);
-            sema_post(&mutex);
-        }
+
+void k_thread_a(void* arg) {
+    char* para = arg;
+    while(1) {
+        console_put_str(para);
+    }
 }
-void pfunc2(void *arg){
-    char *para = arg; 
-    while(1) {intr_disable(); put_str(para);intr_enable(); }
+
+void k_thread_b(void* arg) {
+    char* para = arg;
+    while(1) {
+        console_put_str(para);
+    }
 }

@@ -35,21 +35,25 @@ void sema_post(struct semaphore *sema){
     assert(sema->value == 1);
     set_intr_status(old_status);
 }
-void lock_acquire(struct lock *l){ 
-    if(l->holder != running_thread()){ 
-        sema_wait(&l->semaphore);
-        l->holder = running_thread();
-        assert(l->lock_rpt_nr == 0);
-        l->lock_rpt_nr = 1;
+void lock_acquire(struct lock* plock) {
+    if (plock->holder != running_thread()) {
+        sema_wait(&plock->semaphore);
+        plock->holder = running_thread();
+        assert(plock->lock_rpt_nr == 0);
+        plock->lock_rpt_nr = 1;
+    } else {
+        plock->lock_rpt_nr++;
     }
-    else{l->lock_rpt_nr++;}
 }
-void lock_release(struct lock *l){
-    assert(l->holder == running_thread());
-    if(l->lock_rpt_nr > 1) {l->lock_rpt_nr--; return;}
-    assert(l->lock_rpt_nr == 1);
-    l->holder == NULL; 
-    l->lock_rpt_nr = 0;
-    sema_post(&l->semaphore);
 
+void lock_release(struct lock* plock) {
+    assert(plock->holder == running_thread());
+    if (plock->lock_rpt_nr> 1) {
+        plock->lock_rpt_nr--;
+        return;
+    }
+    assert(plock->lock_rpt_nr== 1);
+    plock->holder = NULL;
+    plock->lock_rpt_nr= 0;
+    sema_post(&plock->semaphore);
 }
