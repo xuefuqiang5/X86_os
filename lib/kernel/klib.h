@@ -55,3 +55,4 @@ void strcpy(char *dst, char *src);
 #include "list.h"
 void save_context();
 int is_enable_interrupts(void);
+char to_upper(char c);

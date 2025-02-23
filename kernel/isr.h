@@ -17,5 +17,6 @@ void init_idt_table();
 void clock_interrupt();
 void register_intr_handler(uint32_t vecnum, isr_func func);
 void keyboard_intr_handler();
+#define KEY_PORT 0x60
 
     

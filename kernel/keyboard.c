@@ -1,5 +1,5 @@
 #include "keyboard.h"
-struct scanf2ascii key_mapping_table[256] = {
+const struct scanf2ascii key_mapping_table[256] = {
     [0x00] = {0x00, 0x80, 0},      // 保留
 
     // ----------- 字母区 -----------
@@ -56,7 +56,7 @@ struct scanf2ascii key_mapping_table[256] = {
     [0x35] = {0x35, 0xB5, '/'},    // /
 
     // ----------- 控制键 -----------
-    [0x1C] = {0x1C, 0x9C, '\r'},   // Enter
+    [0x1C] = {0x1C, 0x9C, '\n'},   // Enter
     [0x0E] = {0x0E, 0x8E, 0x08},   // Backspace
     [0x0F] = {0x0F, 0x8F, '\t'},   // Tab
     [0x39] = {0x39, 0xB9, ' '},     // Space
@@ -98,27 +98,80 @@ struct scanf2ascii key_mapping_table[256] = {
     [0x4A] = {0x4A, 0xCA, '-'},    // -
     [0x53] = {0x53, 0xD3, '.'},    // .
 };
+const struct shift_map shift_mapping_table[] = {
+    {'1', '!'},    // Shift + 1
+    {'2', '@'},    // Shift + 2
+    {'3', '#'},    // Shift + 3
+    {'4', '$'},    // Shift + 4
+    {'5', '%'},    // Shift + 5
+    {'6', '^'},    // Shift + 6
+    {'7', '&'},    // Shift + 7
+    {'8', '*'},    // Shift + 8
+    {'9', '('},    // Shift + 9
+    {'0', ')'},   // Shift + 0
+    {'-', '_'},
+    {'=', '+'},
+    {'`', '~'},
+    {',', '<'},
+    {'.', '>'},
+    {'/', '?'}   
+};
+uint8_t get_shift_char(uint8_t c) {
+    switch(c) {
+        case '1': return '!';    // Shift + 1
+        case '2': return '@';    // Shift + 2
+        case '3': return '#';    // Shift + 3
+        case '4': return '$';    // Shift + 4
+        case '5': return '%';    // Shift + 5
+        case '6': return '^';    // Shift + 6
+        case '7': return '&';    // Shift + 7
+        case '8': return '*';    // Shift + 8
+        case '9': return '(';    // Shift + 9
+        case '0': return ')';    // Shift + 0
+        case '-': return '_';    // Shift + -
+        case '=': return '+';    // Shift + =
+        case '`': return '~';    // Shift + `
+        case ',': return '<';    // Shift + ,
+        case '.': return '>';    // Shift + .
+        case '/': return '?';    // Shift + /
+        default: return '\0';   // 未定义字符
+    }
+}
 ModifierFlags modify_key_status = {0};
-void set_modify_flag(enum ModifierKey make_code){
-    switch (make_code)
+void change_key_status(uint8_t code){
+    switch (code)
     {
-    case CAPS_LOCK:
-        modify_key_status.caps_lock = 1;
+    case CAPS_LOCK_BREAK:
+        modify_key_status.caps_lock ^= 1;
         break;
-    case NUM_LOCK:
-        modify_key_status.num_lock = 1;
+    case NUM_LOCK_BREAK:
+        modify_key_status.num_lock ^= 1;
         break;
-    case LEFT_ALT:
-        modify_key_status.left_alt = 1;
-        break;
-    case LEFT_SHIFT:
+    case LEFT_SHIFT_MAKE:
         modify_key_status.left_shift = 1;
         break;
-    case RIGHT_SHIFT:
-        modify_key_status.right_shift = 1;
+    case LEFT_SHIFT_BREAK:
+        modify_key_status.left_shift = 0;
         break;
-    case LEFT_CTRL:
+    case LEFT_ALT_MAKE:
+        modify_key_status.left_alt = 1;
+        break;
+    case LEFT_ALT_BREAK:
+        modify_key_status.left_alt = 0;
+        break;
+    case LEFT_CTRL_MAKE:
         modify_key_status.left_ctrl = 1;
+        break; 
+    case LEFT_CTRL_BREAK: 
+        modify_key_status.left_ctrl = 0;
+        break;
+    case RIGHT_SHIFT_MAKE:
+        modify_key_status.right_alt = 1;
+        break;
+    case RIGHT_SHIFT_BREAK:
+        modify_key_status.right_shift = 0;
+        break;
+
     default:
         break;
     }

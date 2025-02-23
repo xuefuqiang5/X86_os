@@ -12,7 +12,6 @@ int main(){
     pic_clearmask(1);// open keybroad intr 
     //thread_start("hello1", 15, pfunc2, "arg2 ");
     while(1){
-        //console_put_str(" Main");
     }
     return 0; 
 }

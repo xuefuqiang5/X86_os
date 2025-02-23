@@ -2,10 +2,15 @@
 #include "../lib/kernel/klib.h"
 struct scanf2ascii{
     uint8_t make_code;
-    uint16_t break_code;
+    uint8_t break_code;
     uint8_t asscii;
 };
-extern struct scanf2ascii key_mapping_table[256];
+struct shift_map{
+    uint8_t orignal;
+    uint8_t result;
+};
+extern const struct scanf2ascii key_mapping_table[256];
+extern const struct shift_map shift_mapping_table[];
 
 
 typedef struct {
@@ -18,15 +23,27 @@ typedef struct {
     uint8_t left_alt     : 1;  // 左 Alt 是否按下
     uint8_t right_alt    : 1;  // 右 Alt 是否按下（需扩展键支持）
 } ModifierFlags;
-enum ModifierKey {
-    CAPS_LOCK    = 0x58,   // Caps Lock
-    LEFT_SHIFT   = 0x12,   // 左 Shift
-    RIGHT_SHIFT  = 0x59,   // 右 Shift
-    LEFT_CTRL    = 0x14,   // 左 Ctrl
-    RIGHT_CTRL   = 0xE014, // 右 Ctrl（扩展键，需结合 0xE0 前缀）
-    LEFT_ALT     = 0x11,   // 左 Alt
-    RIGHT_ALT    = 0xE011, // 右 Alt（扩展键，需结合 0xE0 前缀）
-    NUM_LOCK     = 0x77    // Num Lock
-};
+
+// 键盘宏定义（根据标准扫描码规范）
+#define CAPS_LOCK_MAKE    0x3A
+#define CAPS_LOCK_BREAK  (CAPS_LOCK_MAKE | 0x80)
+
+#define LEFT_SHIFT_MAKE   0x2A
+#define LEFT_SHIFT_BREAK  (LEFT_SHIFT_MAKE | 0x80)
+
+#define RIGHT_SHIFT_MAKE  0x36
+#define RIGHT_SHIFT_BREAK (RIGHT_SHIFT_MAKE | 0x80)
+
+#define LEFT_CTRL_MAKE    0x1D
+#define LEFT_CTRL_BREAK  (LEFT_CTRL_MAKE | 0x80)
+
+#define LEFT_ALT_MAKE    0x38
+#define LEFT_ALT_BREAK  (LEFT_ALT_MAKE | 0x80)
+
+#define NUM_LOCK_MAKE    0x45
+#define NUM_LOCK_BREAK  (NUM_LOCK_MAKE | 0x80)
+
 extern ModifierFlags modify_key_status;
-void set_modify_flag(enum ModifierKey make_code);
+void change_key_status(uint8_t code);
+uint8_t get_shift_char(uint8_t c);
+

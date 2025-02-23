@@ -35,7 +35,25 @@ void clock_interrupt(){
     }
 }
 void keyboard_intr_handler(){
-    uint8_t press_code = in8(0x60);
-    if(press_code < 0x80)
-    put_char(key_mapping_table[press_code].asscii);
+    uint8_t c = in8(KEY_PORT);
+    if(key_mapping_table[c].asscii == 0) goto key_status;
+    if(key_mapping_table[c].asscii >= 'a' && key_mapping_table[c].asscii <= 'z'){
+        if(modify_key_status.caps_lock == 1 || modify_key_status.left_shift == 1 || modify_key_status.right_shift == 1){
+            put_char(to_upper(key_mapping_table[c].asscii));
+            return;
+        }
+        else {put_char(key_mapping_table[c].asscii); return;}
+    }
+    else{
+        if(modify_key_status.left_shift == 1 || modify_key_status.right_shift == 1){
+            put_char(get_shift_char(key_mapping_table[c].asscii));
+            return;
+        }
+        else {put_char(key_mapping_table[c].asscii); return;}
+    }
+
+
+    key_status:
+        change_key_status(c);
+
 }

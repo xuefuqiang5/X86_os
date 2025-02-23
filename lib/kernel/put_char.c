@@ -136,7 +136,13 @@ void put_char(char c) {
 
 
 
-
+char to_upper(char c) {
+    // 检查字符是否为小写字母
+    if (c >= 'a' && c <= 'z') {
+        return c - 32; // ASCII码偏移转换
+    }
+    return c; // 非小写字母直接返回原值
+}
 
 
 
