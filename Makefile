@@ -18,15 +18,7 @@ debug: write_into
 	cd $(BOCHS_FILE) && bochs -f bochsrc && cd -  
 
 run:
-	qemu-system-i386 \
-	-drive file=$(DISK),format=raw,index=0,media=disk \
-	-smp 1 \
-	-nographic \
-	-serial mon:stdio \
-	-machine accel=tcg \
-	-no-reboot \
-	-D qemu.log \
-	-d guest_errors,cpu_reset
+	qemu-system-i386 -m 32M -smp 1 -drive file=/home/my_linux/LEARN/X86_os/disk_img_file/c.img,format=raw -boot d
 	
 clean: 
 	make -C ./loader clean

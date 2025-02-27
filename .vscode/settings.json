@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "elf.h": "c",
-        "system_error": "cpp"
+        "system_error": "cpp",
+        "ioqueue.h": "c"
     }
 }

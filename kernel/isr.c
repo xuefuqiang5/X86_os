@@ -1,4 +1,3 @@
-
 #include "isr.h"
 void *idt_table[IDT_DESC_CNT];
 void general_program(uint32_t vecnum){
@@ -55,5 +54,6 @@ void keyboard_intr_handler(){
 
     key_status:
         change_key_status(c);
+
 
 }
