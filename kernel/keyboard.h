@@ -1,5 +1,6 @@
 #pragma once
 #include "../lib/kernel/klib.h"
+#include "ioqueue.h"
 struct scanf2ascii{
     uint8_t make_code;
     uint8_t break_code;
@@ -11,8 +12,7 @@ struct shift_map{
 };
 extern const struct scanf2ascii key_mapping_table[256];
 extern const struct shift_map shift_mapping_table[];
-
-
+extern struct ioqueue keyboard_buf;
 typedef struct {
     uint8_t caps_lock    : 1;  // Caps Lock 是否激活
     uint8_t num_lock     : 1;  // Num Lock 是否激活
@@ -46,4 +46,5 @@ typedef struct {
 extern ModifierFlags modify_key_status;
 void change_key_status(uint8_t code);
 uint8_t get_shift_char(uint8_t c);
+void init_keyboard();
 

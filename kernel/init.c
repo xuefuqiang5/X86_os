@@ -11,4 +11,5 @@ void init_all(){
     init_list();
     init_main_thread();
     console_init();  
+    init_keyboard();
 }

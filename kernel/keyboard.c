@@ -1,4 +1,5 @@
 #include "keyboard.h"
+struct ioqueue keyboard_buf;
 const struct scanf2ascii key_mapping_table[256] = {
     [0x00] = {0x00, 0x80, 0},      // 保留
 
@@ -49,7 +50,7 @@ const struct scanf2ascii key_mapping_table[256] = {
     [0x1A] = {0x1A, 0x9A, '['},    // [
     [0x1B] = {0x1B, 0x9B, ']'},    // ]
     [0x2B] = {0x2B, 0xAB, '\\'},   // \ 
-    [0x27] = {0x27, 0xA7, ';'},    // ;
+    [0x27] = {0x27, 0xA7, 0x3b},    // ;
     [0x28] = {0x28, 0xA8, '\''},   // '
     [0x33] = {0x33, 0xB3, ','},    // ,
     [0x34] = {0x34, 0xB4, '.'},    // .
@@ -114,7 +115,12 @@ const struct shift_map shift_mapping_table[] = {
     {'`', '~'},
     {',', '<'},
     {'.', '>'},
-    {'/', '?'}   
+    {'[', '{'},
+    {']', '}'},   
+    {';', ':'},   
+    {'/', '?'},
+    {'\\', '|'},  
+    {'\'', '"'}   
 };
 uint8_t get_shift_char(uint8_t c) {
     switch(c) {
@@ -134,6 +140,11 @@ uint8_t get_shift_char(uint8_t c) {
         case ',': return '<';    // Shift + ,
         case '.': return '>';    // Shift + .
         case '/': return '?';    // Shift + /
+        case '[': return '{';
+        case ']': return '}';
+        case '\\': return '|';
+        case ';': return ':';
+        case '\'': return '"';
         default: return '\0';   // 未定义字符
     }
 }
@@ -175,4 +186,10 @@ void change_key_status(uint8_t code){
     default:
         break;
     }
+}
+void init_keyboard(){
+    put_str("keyboard start init\n");
+    ioq_init(&keyboard_buf);
+    put_str("keyboard has done\n");
+
 }

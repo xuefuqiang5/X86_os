@@ -1,20 +1,20 @@
 #include "ioqueue.h"
-void ioqueue_init(struct ioqueue *ioqueue){
-    memset(ioqueue->buf, 0, BUF_SIZE);
-    ioqueue->consumer = NULL;
-    ioqueue->producer = NULL;
-    lock_init(&ioqueue->mutex);
-    ioqueue->head = 0; 
-    ioqueue->tail = 0; 
+void ioq_init(struct ioqueue *i){
+    memset(i->buf, 0, BUF_SIZE);
+    i->consumer = NULL;
+    i->producer = NULL;
+    lock_init(&i->mutex);
+    i->head = 0; 
+    i->tail = 0; 
 }
-int32_t next_pos(int32_t pos){
+static int32_t next_pos(int32_t pos){
     return (pos + 1) % BUF_SIZE;
 }
-static bool ioq_is_empty(struct ioqueue *i){
+bool ioq_is_empty(struct ioqueue *i){
     assert(!is_enable_interrupts());
     return i->head == i->tail;
 }
-static bool ioq_is_full(struct ioqueue *i){
+bool ioq_is_full(struct ioqueue *i){
     assert(!is_enable_interrupts());
     return next_pos(i->head) == i->tail;
 }
@@ -24,11 +24,11 @@ static void ioq_wait(struct task_struct **waiter){
     thread_block(TASK_BLOCKED);
 }
 static void ioq_wakeup(struct task_struct **waiter){
-    assert(waiter != NULL && *waiter != NULL);
+    assert(*waiter != NULL);
     thread_unblock(*waiter);
     *waiter = NULL;
 }
-void is_empty(struct ioqueue *i){
+static void is_empty(struct ioqueue *i){
     lock_acquire(&i->mutex);
     
 } 
