@@ -99,7 +99,7 @@ const struct scanf2ascii key_mapping_table[256] = {
     [0x4A] = {0x4A, 0xCA, '-'},    // -
     [0x53] = {0x53, 0xD3, '.'},    // .
 };
-const struct shift_map shift_mapping_table[] = {
+/* const struct shift_map shift_mapping_table[] = {
     {'1', '!'},    // Shift + 1
     {'2', '@'},    // Shift + 2
     {'3', '#'},    // Shift + 3
@@ -121,8 +121,8 @@ const struct shift_map shift_mapping_table[] = {
     {'/', '?'},
     {'\\', '|'},  
     {'\'', '"'}   
-};
-uint8_t get_shift_char(uint8_t c) {
+}; */
+uint8_t shift_char(uint8_t c) {
     switch(c) {
         case '1': return '!';    // Shift + 1
         case '2': return '@';    // Shift + 2

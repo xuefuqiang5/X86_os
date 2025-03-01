@@ -7,12 +7,12 @@ struct scanf2ascii{
     uint8_t break_code;
     char ascii;
 };
-struct shift_map{
+/* struct shift_map{
     uint8_t orignal;
     uint8_t result;
-};
+}; */
 extern const struct scanf2ascii key_mapping_table[256];
-extern const struct shift_map shift_mapping_table[];
+/* extern const struct shift_map shift_mapping_table[]; */
 extern struct ioqueue keyboard_buf;
 typedef struct {
     uint8_t caps_lock    : 1;  // Caps Lock 是否激活
@@ -46,6 +46,6 @@ typedef struct {
 
 extern ModifierFlags modify_key_status;
 void change_key_status(uint8_t code);
-uint8_t get_shift_char(uint8_t c);
+uint8_t shift_char(uint8_t c);
 void init_keyboard();
 

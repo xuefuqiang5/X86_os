@@ -34,15 +34,25 @@ void clock_interrupt(){
     }
 }
 void keyboard_intr_handler(){
-    uint8_t c = in8(KEY_PORT);
-    if(key_mapping_table[c].ascii == 0) goto key_status;
-    if(!ioq_is_full(&keyboard_buf)){
-        ioq_putchar(key_mapping_table[c].ascii, &keyboard_buf); 
-        put_char(key_mapping_table[c].ascii); 
+    uint8_t s = in8(KEY_PORT);
+    if(key_mapping_table[s].ascii == 0) goto key_status;
+    char c = key_mapping_table[s].ascii; 
+    if(c >= 'a' && c <= 'z') {
+        if(modify_key_status.left_shift == 1    ||
+            modify_key_status.right_shift == 1  ||
+            modify_key_status.caps_lock == 1){c = to_upper(c); goto print_char;}
     }
+    if(modify_key_status.left_shift == 1 || modify_key_status.right_shift == 1){
+        c =  shift_char(c);
+    }
+    print_char:
+        if(!ioq_is_full(&keyboard_buf)){
+            ioq_putchar(c, &keyboard_buf); 
+            //put_char(c); 
+        }
     return;
-        key_status:
-        change_key_status(c); 
+    key_status:
+        change_key_status(s); 
 
 
 }
