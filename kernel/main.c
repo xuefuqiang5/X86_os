@@ -1,7 +1,5 @@
 #include "init.h"
-void k_thread_a();
-void k_thread_b(void *arg);
-void print_keybuf();
+void k_thread_a(void *arg);
 struct lock mutex;
 int main(){
     init_all();
@@ -14,23 +12,12 @@ int main(){
     return 0; 
 }
 void k_thread_a(void *arg) {
-
     while(1) {
         uint32_t old_status = intr_disable();
-        
         if(!ioq_is_empty(&keyboard_buf)){
             char c = ioq_getchar(&keyboard_buf);
             console_put_char(c);
-            //console_put_str("\n  "); 
-            //console_put_str(arg);
         } 
         set_intr_status(old_status);
-    }
-}
-
-void k_thread_b(void* arg) {
-    char* para = arg;
-    while(1) {
-        console_put_str(para);
     }
 }
