@@ -49,8 +49,8 @@ const struct scanf2ascii key_mapping_table[256] = {
     [0x0D] = {0x0D, 0x8D, '='},    // =
     [0x1A] = {0x1A, 0x9A, '['},    // [
     [0x1B] = {0x1B, 0x9B, ']'},    // ]
-    [0x2B] = {0x2B, 0xAB, '\\'},   // \ 
-    [0x27] = {0x27, 0xA7, 0x3b},    // ;
+    [0x2B] = {0x2B, 0xAB, '\\'},   
+    [0x27] = {0x27, 0xA7, ';'},    // ;
     [0x28] = {0x28, 0xA8, '\''},   // '
     [0x33] = {0x33, 0xB3, ','},    // ,
     [0x34] = {0x34, 0xB4, '.'},    // .
@@ -188,7 +188,7 @@ void change_key_status(uint8_t code){
     }
 }
 void init_keyboard(){
-    put_str("keyboard start init\n");
+    register_intr_handler(0x21, keyboard_intr_handler); 
     ioq_init(&keyboard_buf);
     put_str("keyboard has done\n");
 

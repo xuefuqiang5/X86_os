@@ -13,4 +13,7 @@ struct ioqueue{
 void ioq_init(struct ioqueue *i);
 char ioq_getchar(struct ioqueue *i);
 void ioq_putchar(char c, struct ioqueue *i);
+bool ioq_is_empty(struct ioqueue *i);
+bool ioq_is_full(struct ioqueue *i);
+
 

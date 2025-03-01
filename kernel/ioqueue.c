@@ -28,10 +28,6 @@ static void ioq_wakeup(struct task_struct **waiter){
     thread_unblock(*waiter);
     *waiter = NULL;
 }
-static void is_empty(struct ioqueue *i){
-    lock_acquire(&i->mutex);
-    
-} 
 char ioq_getchar(struct ioqueue *i){
     assert(!is_enable_interrupts());
     while(ioq_is_empty(i)){

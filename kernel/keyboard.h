@@ -1,10 +1,11 @@
 #pragma once
 #include "../lib/kernel/klib.h"
 #include "ioqueue.h"
+#include "isr.h"
 struct scanf2ascii{
     uint8_t make_code;
     uint8_t break_code;
-    uint8_t asscii;
+    char ascii;
 };
 struct shift_map{
     uint8_t orignal;

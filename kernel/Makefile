@@ -1,6 +1,6 @@
 CC = gcc
 LD = ld
-CFLAGS = -m32 -ffreestanding -nostdlib -fno-stack-protector -O0 -g
+CFLAGS = -m32 -ffreestanding -nostdlib -fno-stack-protector -O0 -g -Wall -Wextra
 ASFLAGS = -m32 -g
 TARGET_DIR = ../bin
 LDFLAGS = -T link.ld
