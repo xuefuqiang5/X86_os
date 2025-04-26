@@ -1,9 +1,9 @@
 # how much memory the emulated machine will have
-megs: 32
+megs: 64
 
 # filename for ROM images
-romimage: file=/usr/local/share/bochs/BIOS-bochs-latest
-vgaromimage: file=/usr/local/share/bochs/VGABIOS-lgpl-latest 
+romimage: file=/home/xuefuqiang5/bochs/share/bochs/BIOS-bochs-latest
+vgaromimage: file=/home/xuefuqiang5/bochs/share/bochs/VGABIOS-lgpl-latest 
 
 # choose the boot disk
 boot: disk
@@ -15,8 +15,8 @@ log: bochsout_disk.txt
 mouse: enabled=0
 
 # enable key mapping, using US layout as default
-keyboard: keymap=/usr/local/share/bochs/keymaps/x11-pc-us.map
+keyboard: keymap=/home/xuefuqiang5/bochs/share/bochs/keymaps/x11-pc-us.map
 
 # ATA controller and disk image
 ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
-ata0-master: type=disk, path="/home/my_linux/LEARN/X86_os/disk_img_file/c.img", cylinders=121, heads=16, spt=63
+ata0-master: type=disk, path="/home/xuefuqiang5/X86_os/disk_img_file/c.img", cylinders=121, heads=16, spt=63
